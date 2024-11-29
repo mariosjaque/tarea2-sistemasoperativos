@@ -22,4 +22,5 @@ Se recibirá como parámetros de entrada el número de marcos iniciales (-m), al
  ./mvirtual -m 3 -a FIFO -f referencias.txt
 ```
 Donde ```referencias.txt``` contiene ```0 1 3 4 1 2 5 1 2 3 4```
+Para el argumento del algoritmo de reemplazamiento se debe utilizar en mayúsculas uno de los siguientes nombres: FIFO, LRU, OPTIMO, RELOJ_SIMPLE. 
 
