@@ -122,14 +122,14 @@ int buscar_pagina(int paginas[],int pagina,int posicion_de_inicio,int cantidad_d
 void buscar_pagina_esta(tabla_hash *tabla,int paginas[],int i,int *verificador){
     lista_enlazada *actual;
     if(tabla->Lista[funcion_hash(paginas[i])]->paginavirtual == paginas[i]){
-        printf("HIT");
+        printf("HIT\n");
         *verificador = 1;
     }
     actual = tabla->Lista[funcion_hash(paginas[i])];
     while(actual->siguiente != NULL){
         actual = actual->siguiente;
         if(actual->paginavirtual == paginas[i]){
-            printf("HIT");
+            printf("HIT\n");
             *verificador = 1;
             break;
         }
@@ -192,7 +192,7 @@ int FIFO(tabla_hash *tabla,int paginas[],int marcos[],int cantidad_paginas,int n
                     Añadir_pagina(tabla,paginas[i],marcos[contador2]);
                     actual = tabla->Lista[funcion_hash(paginas[i])];
                     fallos_de_pagina ++;
-                    printf("MISS");
+                    printf("MISS\n");
                     contador2 ++;
                     break;
                 }
@@ -202,7 +202,7 @@ int FIFO(tabla_hash *tabla,int paginas[],int marcos[],int cantidad_paginas,int n
                         remover_pagina(tabla,actual->paginavirtual);
                         Añadir_pagina(tabla,paginas[i],actual->marcos_de_pagina);
                         fallos_de_pagina ++;
-                        printf("MISS");
+                        printf("MISS\n");
                         contador2 ++;
                         break;
                     }
