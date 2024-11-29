@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define tamaño_prueba 10
-
+//Creamos la estrucutra de la tabla hash y las listas enlazadas
 typedef struct lista_enlazada{
     int paginavirtual;
     int marcos_de_pagina;
@@ -15,11 +15,12 @@ typedef struct
     lista_enlazada *Lista[tamaño_prueba];
 }tabla_hash;
 
-
+//Funcion hash utilizada para ubicar las paginas dentro de la tabla hash
 int funcion_hash(int pagina){
     int numero = pagina % tamaño_prueba;
     return numero;
 }
+//Imprime el estado actual de la tabla hash
 void imprimir_tabla_hash(tabla_hash *tabla) {
     printf("Estado actual de la tabla hash:\n");
     for (int i = 0; i < tamaño_prueba; i++) {
@@ -37,7 +38,9 @@ void imprimir_tabla_hash(tabla_hash *tabla) {
     }
     printf("\n");
 }
+//Añade las pagina dentro de la tabla hash
 int Añadir_pagina(tabla_hash *tabla,int pagina,int marco){
+    //Si donde deberia estar la pagina, no hay nada se añade sin mas
     if (tabla->Lista[funcion_hash(pagina)] == NULL) {
         tabla->Lista[funcion_hash(pagina)] = malloc(sizeof(lista_enlazada));
         if (tabla->Lista[funcion_hash(pagina)] == NULL) {
@@ -48,10 +51,10 @@ int Añadir_pagina(tabla_hash *tabla,int pagina,int marco){
         tabla->Lista[funcion_hash(pagina)]->paginavirtual = pagina;
         tabla->Lista[funcion_hash(pagina)]->siguiente = NULL;
     }
+    //Se busca hasta el final de la lista enlazada, para agregar la pagina
     else{
         
         lista_enlazada *Actual = tabla->Lista[funcion_hash(pagina)];
-        //printf("EJECUTADO 1: %d\n",pagina);
         if(Actual->siguiente == NULL){
             
             Actual->siguiente = malloc(sizeof(lista_enlazada));
@@ -77,7 +80,7 @@ int Añadir_pagina(tabla_hash *tabla,int pagina,int marco){
     
     return 0;
 }
-
+//Quita la pagina que se requiere de la tabla hash
 int remover_pagina(tabla_hash *tabla,int pagina)
 {
     int marco;
@@ -104,6 +107,7 @@ int remover_pagina(tabla_hash *tabla,int pagina)
     //Ya que algunos algoritmos necesitan del marco, se lo daremos al eliminar la pagina
     return marco;
 }
+// Se encuentra la pagina  que no sera referenciada por el tiempo mas largo
 int buscar_pagina(int paginas[],int pagina,int posicion_de_inicio,int cantidad_de_paginas){
     int numero = 0,i;
     for(i = posicion_de_inicio +1;i<cantidad_de_paginas;i++){
@@ -114,23 +118,25 @@ int buscar_pagina(int paginas[],int pagina,int posicion_de_inicio,int cantidad_d
     }
     return -1;
 }
+//Busca si la pagina se encuentra dentro de la tabla hash, en caso de estarlo es un HIT
 void buscar_pagina_esta(tabla_hash *tabla,int paginas[],int i,int *verificador){
     lista_enlazada *actual;
     if(tabla->Lista[funcion_hash(paginas[i])]->paginavirtual == paginas[i]){
-        printf("1HIT Marco: %d pagina: %d\n",tabla->Lista[funcion_hash(paginas[i])]->marcos_de_pagina, tabla->Lista[funcion_hash(paginas[i])]->paginavirtual);
+        printf("HIT");
         *verificador = 1;
     }
     actual = tabla->Lista[funcion_hash(paginas[i])];
     while(actual->siguiente != NULL){
         actual = actual->siguiente;
         if(actual->paginavirtual == paginas[i]){
-            printf("2HIT Marco: %d pagina: %d\n",actual->marcos_de_pagina, actual->paginavirtual);
+            printf("HIT");
             *verificador = 1;
             break;
         }
                 
     }
 }
+//Encuenta la posicion del numero mayor
 int posicion_mayor(int arreglo[],int tamaño){
     int posicion_mayor = 0;
     for (int i = 1; i < tamaño; i++) {
@@ -141,6 +147,7 @@ int posicion_mayor(int arreglo[],int tamaño){
 
     return posicion_mayor;
 }
+//Aumenta 1 segundo
 int aumentar_tiempo(int arreglo[],int numero_marco){
     int i;
     for(i = 0;i<numero_marco;i++){
@@ -181,12 +188,11 @@ int FIFO(tabla_hash *tabla,int paginas[],int marcos[],int cantidad_paginas,int n
                 actual = tabla->Lista[j];
                 if(tabla->Lista[j]->marcos_de_pagina == marcos[contador2]){
                     int pagina = tabla->Lista[j]->paginavirtual;
-                    //printf("%d\n",pagina);
                     remover_pagina(tabla,pagina);
                     Añadir_pagina(tabla,paginas[i],marcos[contador2]);
                     actual = tabla->Lista[funcion_hash(paginas[i])];
                     fallos_de_pagina ++;
-                    printf("5MISS Marco: %d Pagina: %d\n",actual->marcos_de_pagina,actual->paginavirtual);
+                    printf("MISS");
                     contador2 ++;
                     break;
                 }
@@ -196,7 +202,7 @@ int FIFO(tabla_hash *tabla,int paginas[],int marcos[],int cantidad_paginas,int n
                         remover_pagina(tabla,actual->paginavirtual);
                         Añadir_pagina(tabla,paginas[i],actual->marcos_de_pagina);
                         fallos_de_pagina ++;
-                        printf("4MISS Marco: %d Pagina: %d\n",actual->marcos_de_pagina,actual->paginavirtual);
+                        printf("MISS");
                         contador2 ++;
                         break;
                     }
@@ -240,7 +246,6 @@ int Optimo(tabla_hash *tabla,int paginas[],int marcos[],int cantidad_paginas,int
             for(j = 0;j<numero_de_marcos;j++){
                 arreglo[j] = buscar_pagina(paginas,paginas_asignadas[j],i,cantidad_paginas);
                 if(arreglo[j] == -1){
-                    printf("Estoy en el bucle for\n");
                     marco = remover_pagina(tabla,paginas_asignadas[j]);
                     Añadir_pagina(tabla,paginas[i],marco);
                     paginas_asignadas[j] = paginas[i];
@@ -300,10 +305,6 @@ int LRU(tabla_hash *tabla,int paginas[],int marcos[],int cantidad_paginas,int nu
             }
             printf("MISS\n");
             fallos_de_pagina ++;
-            for(j=0;j<numero_de_marcos;j++){
-                printf("%d",tiempo[j]);
-            }
-            printf("\n");
             tiempo_mayor = posicion_mayor(tiempo,numero_de_marcos);
             marco = remover_pagina(tabla,paginas_asignadas[tiempo_mayor]);
             Añadir_pagina(tabla,paginas[i],marco);
@@ -329,7 +330,6 @@ int Reloj_simple(tabla_hash *tabla,int paginas[],int marcos[],int cantidad_pagin
     int fallos_de_pagina = 0,i,contador = 0,verificador = 0,j,marco;
     int paginas_asignadas[numero_de_marcos];
     int bits[numero_de_marcos];
-    //Se inicializa todo en el arreglo tiempo, a el numero de tamaño del marco, ya que esto solo sera utilizado si es que, los marcos no bastan, para el tamaño de paginas
     for(i = 0;i<numero_de_marcos;i++){
         bits[i] = 1;
     }
@@ -362,7 +362,7 @@ int Reloj_simple(tabla_hash *tabla,int paginas[],int marcos[],int cantidad_pagin
             Añadir_pagina(tabla,paginas[i],marco);
             bits[j] = 1;
             paginas_asignadas[j] = paginas[i];
-            printf("ESTADO ACTUAL:");
+            printf("Estado actual de los bits:");
             for(int z=0;z<numero_de_marcos;z++){
                 printf("%d ",bits[z]);
             }
@@ -416,9 +416,7 @@ int main(int argc,char *argv[])
         cantidad_paginas++;
     }
     fclose(referencias);
-
     //Creamos la respectiva tabla hash con un tamaño constante de 10
-    
     printf("\n");
     
     tabla_hash *tabla = malloc(sizeof(tabla_hash));
