@@ -17,7 +17,7 @@ Se construirá un solo archivo, el cual se puede ejecutar de la siguiente forma:
 ```
 
 ## Instrucciones de uso
-Se recibirá como parámetro de entrada el número de productores, número de consumidores, tamaño inicial de cola y tiempo de espera máxima de consumidores en segundos.
+Se recibirá como parámetro de entrada el número de productores (-p), número de consumidores (-c), tamaño inicial de cola (-s), y tiempo de espera máxima de consumidores en segundos (-t).
 Ejemplo de ejecución:
 ```
 ./simulapc -p 10 -c 5 -s 50 -t 1
